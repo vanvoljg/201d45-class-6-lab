@@ -80,6 +80,58 @@ var calculate_cookie_sales = function() {
 var render_sales_list = function() {
   console.log('Render sales list for ' + this.location);
   console.log(this.sales_list);
+
+  // create inner list first, store it as a fragment element, append to the
+  // outer ul object... TODO MORE STUFF
+
+  // get the ul element with id 'sales_projections'
+  var sales_section = document.getElementById('sales_projections');
+  var ul_el = document.createElement('ul');
+  var li_el = document.createElement('li');
+  var article_el = document.createElement('article');
+  var h4_el = document.createElement('h4');
+  var append_el;
+
+  // // create li, appendchild to compleVte_el
+  // append_el = document.cloneNode(li_el);
+  // sales_section.appendChild(append_el);
+  
+  // // create article, append to complete_el
+  // append_el = document.cloneNode(article_el);
+  // sales_section.appendChild(append_el);
+
+  // // create h4, set textContent to be this.location, append to complete_el
+  // append_el = document.cloneNode(h4_el);
+  // append_el.textContent = this.location;
+  // sales_section.appendChild(append_el);
+
+  // // create ul
+  // append_el = document.cloneNode(ul_el);
+  // sales_section.appendChild(append_el);
+
+  // // loop through this.sales_list array. for each element in the array,
+  // // create li, set textContent = this.sales_list[ii]
+  // // append the in-process li to sales_section
+  // for (var ii = 0; ii < this.sales_list.length; ii++) {
+  //   console.log(this.sales_list[ii]);
+  // }
+  /*
+<ul>
+      <li>
+        <article>
+          <h4>1st and Pike</h4>
+          <ul>
+            <li>6am: 16 cookies</li>
+            <li>7am: 20 cookies</li>
+            <li>...</li>
+            <li>7pm: 57 cookies</li>
+            <li>8pm: 29 cookies</li>
+            <li>Total: 657 cookies</li>
+          </ul>
+        </article>
+      </li>
+    </ul>
+  */
 };
 
 // adding mthods to location objects
