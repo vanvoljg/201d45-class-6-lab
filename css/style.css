@@ -12,5 +12,18 @@ body {
   background: #d8b077;
   line-height: 1.3;
   color: #11120c;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+header span {
   font-family: nunito, sans-serif;
+}
+
+#sales_section {
+  overflow: auto;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+    'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+#sales_section>ul:first-child {
+  font: bold;
 }
