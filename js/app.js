@@ -1,14 +1,6 @@
 'use strict';
 console.clear();
 
-/*
-Store location object
-  min customers per hour
-  max customers per hour
-  average cookies per customer
-  .render_sales_numbers() random number of customers per hour, integers
-*/
-
 // helper functions
 
 // The following _randInt function is pulled from MDN:
@@ -73,8 +65,9 @@ var Alki = {
 };
 
 // defining methods for objects
+
 var number_of_customers = function() {
-  // returns a random 
+  // returns a random number of customers in a given range.
   return _randInt(this.min_hourly_cust, this.max_hourly_cust);
 };
 
@@ -83,7 +76,7 @@ var number_of_customers = function() {
 // Takes no input, returns an integer
 var calculate_cookies_per_hour = function() {
   return Math.floor(this.number_of_customers() * this.avg_cookies_per_sale);
-}
+};
 
 var calculate_cookie_sales = function() {
   // pushes array elements to the sales_list array of the format
@@ -95,9 +88,12 @@ var calculate_cookie_sales = function() {
   // because the 6am slot reports 6-6:30 and the 8pm slot reports 7:30-8pm
   // So at open time, only report a half-hour duration of sales
   this.sales_list = [];
-  var sold = Math.floor(this.calculate_cookies_per_hour() / 2);
-  var total = sold;
+  var total = 0, sold = 0;
   var current_hour = this.open_at;
+
+  // Open time is half an hour
+  sold = Math.floor(this.calculate_cookies_per_hour() / 2);
+  total =+ sold;
   this.sales_list.push(`${current_hour}am: ${sold} cookies`);
 
   // Loop from hour +1 to 11, because noon is a special case
@@ -125,7 +121,7 @@ var calculate_cookie_sales = function() {
   this.sales_list.push(`${current_hour}pm: ${sold} cookies`);
 
   // Also push the total sales numbers
-  this.sales_list.push(`Total: ${total}`);
+  this.sales_list.push(`Total: ${total} cookies`);
 };
 
 //
@@ -140,13 +136,14 @@ var render_sales_list = function() {
   var ul_el = document.createElement('ul');
   var li_el = document.createElement('li');
   var h4_el = document.createElement('h4');
+  var hour_li_el;
 
   h4_el.textContent = this.location;
   li_el.appendChild(h4_el);
 
   // build ul, append each sales_list item to the list
   for (var ii = 0; ii < this.sales_list.length; ii++) {
-    var hour_li_el = document.createElement('li');
+    hour_li_el = document.createElement('li');
     hour_li_el.textContent = this.sales_list[ii];
     ul_el.appendChild(hour_li_el);
   }
@@ -167,8 +164,29 @@ Seatac_airport.calculate_cookies_per_hour = calculate_cookies_per_hour;
 Seatac_airport.calculate_cookie_sales = calculate_cookie_sales;
 Seatac_airport.render_sales_list = render_sales_list;
 
+Seattle_center.number_of_customers = number_of_customers;
+Seattle_center.calculate_cookie_sales = calculate_cookie_sales;
+Seattle_center.calculate_cookies_per_hour = calculate_cookies_per_hour;
+Seattle_center.render_sales_list = render_sales_list;
+
+Capitol_hill.number_of_customers = number_of_customers;
+Capitol_hill.calculate_cookie_sales = calculate_cookie_sales;
+Capitol_hill.calculate_cookies_per_hour = calculate_cookies_per_hour;
+Capitol_hill.render_sales_list = render_sales_list;
+
+Alki.number_of_customers = number_of_customers;
+Alki.calculate_cookie_sales = calculate_cookie_sales;
+Alki.calculate_cookies_per_hour = calculate_cookies_per_hour;
+Alki.render_sales_list = render_sales_list;
+
 First_and_pike.calculate_cookie_sales();
 First_and_pike.render_sales_list();
 
 Seatac_airport.calculate_cookie_sales();
 Seatac_airport.render_sales_list();
+
+Seattle_center.calculate_cookie_sales();
+Seattle_center.render_sales_list();
+
+Capitol_hill.calculate_cookie_sales();
+Capitol_hill.render_sales_list();
