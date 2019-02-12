@@ -43,6 +43,7 @@ var calculate_cookie_sales = function() {
   // note that open and close numbers will have to be half-hour durations
   // because the 6am slot reports 6-6:30 and the 8pm slot reports 7:30-8pm
   // So at open time, only report a half-hour duration of sales
+  this.sales_list = [];
   var sold = Math.floor(this.number_of_customers() * this.avg_cookies_per_sale / 2);
   var total = sold;
   var current_hour = this.open_at;
@@ -82,3 +83,7 @@ var render_sales_list = function() {
 };
 
 // adding mthods to location objects
+
+first_and_pike.number_of_customers = number_of_customers;
+first_and_pike.calculate_cookie_sales = calculate_cookie_sales;
+first_and_pike.render_sales_list = render_sales_list;
