@@ -9,16 +9,20 @@ Store location object
   .render_sales_numbers() random number of customers per hour, integers
 */
 
-// The following randInt function is pulled from MDN:
+// helper functions
+
+// The following _randInt function is pulled from MDN:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#Getting_a_random_integer_between_two_values_inclusive
 // And modified to take number in any order, because you never know
-function randInt(a, b) {
+function _randInt(a, b) {
   var min = Math.ceil(Math.min(a, b));
   var max = Math.floor(Math.max(a, b));
   return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
 }
 
-var first_and_pike = {
+// =====================================
+
+var First_and_pike = {
   location : '1st and Pike',
   min_hourly_cust : 23,
   max_hourly_cust : 65,
@@ -28,11 +32,58 @@ var first_and_pike = {
   open_at : 6
 };
 
+var Seatac_airport = {
+  location : 'SeaTac Airport',
+  min_hourly_cust : 3,
+  max_hourly_cust : 24,
+  avg_cookies_per_sale: 1.2,
+  sales_list : [],
+  close_at : 20,
+  open_at : 6
+};
+
+var Seattle_center = {
+  location : 'Seattle Center',
+  min_hourly_cust : 11,
+  max_hourly_cust : 38,
+  avg_cookies_per_sale: 3.7,
+  sales_list : [],
+  close_at : 20,
+  open_at : 6
+};
+
+var Capitol_hill = {
+  location : 'Capitol Hill',
+  min_hourly_cust : 20,
+  max_hourly_cust : 38,
+  avg_cookies_per_sale: 2.3,
+  sales_list : [],
+  close_at : 20,
+  open_at : 6
+};
+
+var Alki = {
+  location : 'Alki',
+  min_hourly_cust : 2,
+  max_hourly_cust : 16,
+  avg_cookies_per_sale: 4.6,
+  sales_list : [],
+  close_at : 20,
+  open_at : 6
+};
+
 // defining methods for objects
 var number_of_customers = function() {
   // returns a random 
-  return randInt(this.min_hourly_cust, this.max_hourly_cust);
+  return _randInt(this.min_hourly_cust, this.max_hourly_cust);
 };
+
+// calculates cookies per hour
+// Returns a number of cookies in an hourly period
+// Takes no input, returns an integer
+var calculate_cookies_per_hour = function() {
+  return Math.floor(this.number_of_customers() * this.avg_cookies_per_sale);
+}
 
 var calculate_cookie_sales = function() {
   // pushes array elements to the sales_list array of the format
@@ -44,32 +95,32 @@ var calculate_cookie_sales = function() {
   // because the 6am slot reports 6-6:30 and the 8pm slot reports 7:30-8pm
   // So at open time, only report a half-hour duration of sales
   this.sales_list = [];
-  var sold = Math.floor(this.number_of_customers() * this.avg_cookies_per_sale / 2);
+  var sold = Math.floor(this.calculate_cookies_per_hour() / 2);
   var total = sold;
   var current_hour = this.open_at;
   this.sales_list.push(`${current_hour}am: ${sold} cookies`);
 
   // Loop from hour +1 to 11, because noon is a special case
   for (current_hour++; current_hour < 12 ; current_hour++) {
-    sold = Math.floor(this.number_of_customers() * this.avg_cookies_per_sale);
+    sold = this.calculate_cookies_per_hour();
     total += sold;
     this.sales_list.push(`${current_hour}am: ${sold} cookies`);
   }
-  
+
   // Noon is a special case all to itself
-  sold = Math.floor(this.number_of_customers() * this.avg_cookies_per_sale);
+  sold = this.calculate_cookies_per_hour();
   total += sold;
   this.sales_list.push(`${current_hour}pm: ${sold} cookies`);
 
   // Finish the rest of the time the store is open
   for (current_hour = 1; current_hour < (this.close_at - 12); current_hour++) {
-    sold = Math.floor(this.number_of_customers() * this.avg_cookies_per_sale);
+    sold = this.calculate_cookies_per_hour();
     total += sold;
     this.sales_list.push(`${current_hour}pm: ${sold} cookies`);
   }
 
   // At close-time, only report a half-hour duration of sales
-  sold = Math.floor(this.number_of_customers() * this.avg_cookies_per_sale / 2);
+  sold = Math.floor(this.calculate_cookies_per_hour() / 2);
   total += sold;
   this.sales_list.push(`${current_hour}pm: ${sold} cookies`);
 
@@ -77,65 +128,47 @@ var calculate_cookie_sales = function() {
   this.sales_list.push(`Total: ${total}`);
 };
 
+//
 var render_sales_list = function() {
   console.log('Render sales list for ' + this.location);
   console.log(this.sales_list);
 
-  // create inner list first, store it as a fragment element, append to the
-  // outer ul object... TODO MORE STUFF
+  // li > h4, ul -> li (6am: 16 cookies)
 
   // get the ul element with id 'sales_projections'
-  var sales_section = document.getElementById('sales_projections');
+  var target = document.getElementById('sales_projections');
   var ul_el = document.createElement('ul');
   var li_el = document.createElement('li');
-  var article_el = document.createElement('article');
   var h4_el = document.createElement('h4');
-  var append_el;
 
-  // // create li, appendchild to compleVte_el
-  // append_el = document.cloneNode(li_el);
-  // sales_section.appendChild(append_el);
-  
-  // // create article, append to complete_el
-  // append_el = document.cloneNode(article_el);
-  // sales_section.appendChild(append_el);
+  h4_el.textContent = this.location;
+  li_el.appendChild(h4_el);
 
-  // // create h4, set textContent to be this.location, append to complete_el
-  // append_el = document.cloneNode(h4_el);
-  // append_el.textContent = this.location;
-  // sales_section.appendChild(append_el);
+  // build ul, append each sales_list item to the list
+  for (var ii = 0; ii < this.sales_list.length; ii++) {
+    var hour_li_el = document.createElement('li');
+    hour_li_el.textContent = this.sales_list[ii];
+    ul_el.appendChild(hour_li_el);
+  }
 
-  // // create ul
-  // append_el = document.cloneNode(ul_el);
-  // sales_section.appendChild(append_el);
-
-  // // loop through this.sales_list array. for each element in the array,
-  // // create li, set textContent = this.sales_list[ii]
-  // // append the in-process li to sales_section
-  // for (var ii = 0; ii < this.sales_list.length; ii++) {
-  //   console.log(this.sales_list[ii]);
-  // }
-  /*
-<ul>
-      <li>
-        <article>
-          <h4>1st and Pike</h4>
-          <ul>
-            <li>6am: 16 cookies</li>
-            <li>7am: 20 cookies</li>
-            <li>...</li>
-            <li>7pm: 57 cookies</li>
-            <li>8pm: 29 cookies</li>
-            <li>Total: 657 cookies</li>
-          </ul>
-        </article>
-      </li>
-    </ul>
-  */
+  li_el.appendChild(ul_el);
+  target.appendChild(li_el);
 };
 
 // adding mthods to location objects
 
-first_and_pike.number_of_customers = number_of_customers;
-first_and_pike.calculate_cookie_sales = calculate_cookie_sales;
-first_and_pike.render_sales_list = render_sales_list;
+First_and_pike.number_of_customers = number_of_customers;
+First_and_pike.calculate_cookies_per_hour = calculate_cookies_per_hour;
+First_and_pike.calculate_cookie_sales = calculate_cookie_sales;
+First_and_pike.render_sales_list = render_sales_list;
+
+Seatac_airport.number_of_customers = number_of_customers;
+Seatac_airport.calculate_cookies_per_hour = calculate_cookies_per_hour;
+Seatac_airport.calculate_cookie_sales = calculate_cookie_sales;
+Seatac_airport.render_sales_list = render_sales_list;
+
+First_and_pike.calculate_cookie_sales();
+First_and_pike.render_sales_list();
+
+Seatac_airport.calculate_cookie_sales();
+Seatac_airport.render_sales_list();
