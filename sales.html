@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=900px, initial-scale=1.0">
+  <meta name="viewport" content="width=900, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Sales</title>
-  <link rel="stylesheet" href="./css/reset.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="./css/reset.css" type="text/css" /> -->
   <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" />
   <link rel="stylesheet" href="./css/style.css" type="text/css" />
 </head>
@@ -19,11 +19,33 @@
     </nav>
     <img src="./assets/salmon.png" alt="Coho Salmon" />
     <span>Pat's Delicious Salmon Cookies</span>
-    <span>Sales Page</span>
+    <h2>Sales Page</h2>
   </header>
 
   <div>
+    <h3>List of Locations</h3>
     <ul>
+      <li><a href="" onclick="first_and_pike.render_sales_numbers()">1st and Pike</a></li>
+      <li><a href="" onclick="seatac_airport.render_sales_numbers()">Seatac Airport</a></li>
+      <li><a href="" onclick="seattle_center.render_sales_numbers()">Seattle Center</a></li>
+      <li><a href="" onclick="capitol_hill.render_sales_numbers()">Capitol Hill</a></li>
+      <li><a href="" onclick="alki.render_sales_numbers()">Alki</a></li>
+    </ul>
+  </div>
+
+  <div id="sales_projections">
+    <ul>
+      <li>
+        <h4>1st and Pike</h4>
+        <ul>
+          <li>6am: 16 cookies</li>
+          <li>7am: 20 cookies</li>
+          <li>...</li>
+          <li>7pm: 57 cookies</li>
+          <li>8pm: 29 cookies</li>
+          <li>Total: 657 cookies</li>
+        </ul>
+      </li>
     </ul>
   </div>
 
