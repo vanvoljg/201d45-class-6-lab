@@ -1,0 +1,16 @@
+/*
+Color scheme for the page:
+Background: d8b077 / rgb 216,176,119
+Body text: 11120c / rgb 17,18,12
+Article background: bd5e39 / rgb 189,94,57
+Mild contrast, darker: a34633/ rgb 163,70,51
+Text to go on the darker reds: a34633 / rgb 163,70,51
+Font face: Nunito, from Google
+*/
+
+body {
+  background: #d8b077;
+  line-height: 1.3;
+  color: #11120c;
+  font-family: nunito, sans-serif;
+}
