@@ -12,5 +12,41 @@ body {
   background: #d8b077;
   line-height: 1.3;
   color: #11120c;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+header span {
   font-family: nunito, sans-serif;
+}
+
+nav li {
+  display: inline-block;
+  margin: 5px 15px 5px 5px;
+  font-family: nunito, 'Lucida Sans', sans-serif
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+
+#sales_section {
+  overflow: auto;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+    'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  background: #bd5e39;
+}
+#sales_section td {
+  padding: 7px;
+  border: none;
+  outline: none;
+}
+#sales_section>tr:nth-of-type(even) {
+  background: #a34633;
+}
+#sales_section>tr>td:first-child {
+  font-weight: bold;
+}
+#sales_section>*:first-child {
+  font-weight: bold;
 }
