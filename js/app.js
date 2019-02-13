@@ -26,10 +26,10 @@ var Fishcookie_store = function(store_location, min_hourly_cust, max_hourly_cust
   this.list_of_sales = list_of_sales;
   this.open_at = open_at;
   this.close_at = close_at;
-  // fishcookie_store_list.push(store_location);
+  list_of_stores.push(this);
 };
 
-// var fishcookie_store_list = [];
+var list_of_stores = [];
 
 var First_and_pike = new Fishcookie_store('1st and Pike', 23, 65, 6.3);
 var Seatac_airport = new Fishcookie_store('SeaTac Airport', 3, 24, 1.2);
@@ -131,11 +131,12 @@ var render_table_footer = function(open_time, close_time) {
   // Store.list_of_sales.length - 1 corresponds to the last element index in the
   // array
   for (var ii = 0; ii < (close_time - open_time); ii++) {
-    hourly_total = First_and_pike.list_of_sales[ii];
-    hourly_total += Seatac_airport.list_of_sales[ii];
-    hourly_total += Seattle_center.list_of_sales[ii];
-    hourly_total += Capitol_hill.list_of_sales[ii];
-    hourly_total += Alki.list_of_sales[ii];
+    hourly_total = 0;
+
+    for (var jj = 0; jj < list_of_stores.length; jj++) {
+      hourly_total += list_of_stores[jj].list_of_sales[ii];
+    }
+
     grand_total += hourly_total;
 
     td_el = document.createElement('td');
@@ -153,19 +154,9 @@ var render_table_footer = function(open_time, close_time) {
 // time in 24-hour format, integers only!
 render_table_head(6, 20);
 
-First_and_pike.calculate_cookie_sales();
-First_and_pike.render();
-
-Seatac_airport.calculate_cookie_sales();
-Seatac_airport.render();
-
-Seattle_center.calculate_cookie_sales();
-Seattle_center.render();
-
-Capitol_hill.calculate_cookie_sales();
-Capitol_hill.render();
-
-Alki.calculate_cookie_sales();
-Alki.render();
+for (var i = 0; i < list_of_stores.length; i++) {
+  list_of_stores[i].calculate_cookie_sales();
+  list_of_stores[i].render();
+}
 
 render_table_footer(6, 20);
