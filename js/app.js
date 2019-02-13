@@ -26,7 +26,10 @@ var Fishcookie_store = function(location, min_hourly_cust, max_hourly_cust, avg_
   this.list_of_sales = list_of_sales;
   this.open_at = open_at;
   this.close_at = close_at;
+  fishcookie_store_list.push(location);
 };
+
+var fishcookie_store_list = [];
 
 var First_and_pike = new Fishcookie_store('1st and Pike', 23, 65, 6.3, 6, 20);
 var Seatac_airport = new Fishcookie_store('SeaTac Airport', 3, 24, 1.2, 6, 20);
@@ -90,6 +93,8 @@ Fishcookie_store.prototype.render = function() {
 
 // render table head by iterating through the array of objects used
 
+// render table footer by using the list of objects to 
+
 // adding mthods to location objects
 
 First_and_pike.calculate_cookie_sales();
@@ -103,3 +108,6 @@ Seattle_center.render();
 
 Capitol_hill.calculate_cookie_sales();
 Capitol_hill.render();
+
+Alki.calculate_cookie_sales();
+Alki.render();
