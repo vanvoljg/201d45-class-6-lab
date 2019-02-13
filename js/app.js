@@ -31,12 +31,6 @@ var Fishcookie_store = function(store_location, min_hourly_cust, max_hourly_cust
 
 var list_of_stores = [];
 
-var First_and_pike = new Fishcookie_store('1st and Pike', 23, 65, 6.3);
-var Seatac_airport = new Fishcookie_store('SeaTac Airport', 3, 24, 1.2);
-var Seattle_center = new Fishcookie_store('Seattle Center', 11, 38, 3.7);
-var Capitol_hill = new Fishcookie_store('Capitol Hill', 20, 38, 2.3);
-var Alki = new Fishcookie_store('Alki', 2, 16, 4.6);
-
 // defining methods for objects
 
 Fishcookie_store.prototype.number_of_customers = function() {
@@ -74,8 +68,7 @@ Fishcookie_store.prototype.calculate_cookie_sales = function() {
 };
 
 // render function, produces a table row and appends it to the data table
-Fishcookie_store.prototype.render = function() {
-
+Fishcookie_store.prototype.render_current_sales = function() {
   var target = document.getElementById('sales_section');
   var tr_el = document.createElement('tr');
   var td_el = document.createElement('td');
@@ -90,6 +83,11 @@ Fishcookie_store.prototype.render = function() {
   }
 
   target.appendChild(tr_el);
+};
+
+Fishcookie_store.prototype.render_new_sales = function() {
+  this.calculate_cookie_sales();
+  this.render_current_sales();
 };
 
 // render table head by iterating through from open to close, then add a totals
@@ -115,7 +113,13 @@ var render_table_head = function(open_time, close_time) {
   target.appendChild(tr_el);
 };
 
-// render table footer by using the list of objects to, for each index of
+new Fishcookie_store('1st and Pike', 23, 65, 6.3);
+new Fishcookie_store('SeaTac Airport', 3, 24, 1.2);
+new Fishcookie_store('Seattle Center', 11, 38, 3.7);
+new Fishcookie_store('Capitol Hill', 20, 38, 2.3);
+new Fishcookie_store('Alki', 2, 16, 4.6);
+
+// render table footer by using the list of objects, for each index of
 // list_of_sales, add them together to a column total, but also have a running
 // grand total to print at the end of the row
 var render_table_footer = function(open_time, close_time) {
@@ -131,6 +135,7 @@ var render_table_footer = function(open_time, close_time) {
   // Store.list_of_sales.length - 1 corresponds to the last element index in the
   // array
   for (var ii = 0; ii < (close_time - open_time); ii++) {
+    // each new time slot needs a new hourly total, start at 0
     hourly_total = 0;
 
     for (var jj = 0; jj < list_of_stores.length; jj++) {
@@ -155,8 +160,7 @@ var render_table_footer = function(open_time, close_time) {
 render_table_head(6, 20);
 
 for (var i = 0; i < list_of_stores.length; i++) {
-  list_of_stores[i].calculate_cookie_sales();
-  list_of_stores[i].render();
+  list_of_stores[i].render_new_sales();
 }
 
 render_table_footer(6, 20);
