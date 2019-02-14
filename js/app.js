@@ -156,6 +156,9 @@ var render_table_footer = function (open_time, close_time) {
   td_el.textContent = grand_total;
   tr_el.appendChild(td_el);
 
+  // set an id on the footer row so we can find and change it later
+  tr_el.setAttribute('id', 'sales_footer');
+
   target.appendChild(tr_el);
 };
 
@@ -200,15 +203,21 @@ var populate_time_list = function () {
 
 };
 
-// var append_store = function(event) {
+var append_store = function(event) {
+  event.preventDefault();
 
-// };
+  new Fishcookie_store(event.target.store_location.value,
+    event.target.min_hourly_cust.value,
+    event.target.max_hourly_cust.value,
+    event.target.avg_cookies_per_sale.value);
+};
 
 new Fishcookie_store('1st and Pike', 23, 65, 6.3);
 new Fishcookie_store('SeaTac Airport', 3, 24, 1.2);
 new Fishcookie_store('Seattle Center', 11, 38, 3.7);
 new Fishcookie_store('Capitol Hill', 20, 38, 2.3);
 new Fishcookie_store('Alki', 2, 16, 4.6);
+
 
 // populate the time list items
 populate_time_list();
@@ -221,3 +230,6 @@ for (var i = 0; i < list_of_stores.length; i++) {
 }
 
 render_table_footer(6, 20);
+
+var form_target = document.getElementById('add_store_form');
+form_target.addEventListener('submit', append_store);
