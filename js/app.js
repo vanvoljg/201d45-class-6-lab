@@ -3,13 +3,13 @@ console.clear();
 
 // helper functions
 
-var _rand = function(a, b) {
+var _rand = function (a, b) {
   var min = Math.min(a, b);
   var max = Math.max(a, b);
   return (Math.random() * (max - min) + min);
 };
 
-var _randInt = function(a, b) {
+var _randInt = function (a, b) {
   var min = Math.min(a, b);
   var max = Math.max(a, b);
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -17,7 +17,7 @@ var _randInt = function(a, b) {
 
 // =====================================
 
-var Fishcookie_store = function(store_location, min_hourly_cust, max_hourly_cust, avg_cookies_per_sale,
+var Fishcookie_store = function (store_location, min_hourly_cust, max_hourly_cust, avg_cookies_per_sale,
   open_at = 6, close_at = 20, list_of_sales = []) {
   this.store_location = store_location;
   this.min_hourly_cust = min_hourly_cust;
@@ -26,36 +26,28 @@ var Fishcookie_store = function(store_location, min_hourly_cust, max_hourly_cust
   this.list_of_sales = list_of_sales;
   this.open_at = open_at;
   this.close_at = close_at;
-  // fishcookie_store_list.push(store_location);
+  list_of_stores.push(this);
 };
 
-// var fishcookie_store_list = [];
-
-var First_and_pike = new Fishcookie_store('1st and Pike', 23, 65, 6.3);
-var Seatac_airport = new Fishcookie_store('SeaTac Airport', 3, 24, 1.2);
-var Seattle_center = new Fishcookie_store('Seattle Center', 11, 38, 3.7);
-var Capitol_hill = new Fishcookie_store('Capitol Hill', 20, 38, 2.3);
-var Alki = new Fishcookie_store('Alki', 2, 16, 4.6);
+var list_of_stores = [];
 
 // defining methods for objects
 
-Fishcookie_store.prototype.number_of_customers = function() {
+Fishcookie_store.prototype.number_of_customers = function () {
   // returns a random number of customers in a given range.
   return _rand(this.min_hourly_cust, this.max_hourly_cust);
 };
 
-// calculates cookies per hour
-// Returns a number of cookies in an hourly period
-// Takes no input, returns an integer
-Fishcookie_store.prototype.calculate_cookies_per_hour = function() {
+Fishcookie_store.prototype.calculate_cookies_per_hour = function () {
+  // calculates cookies per hour
+  // Returns a number of cookies in an hourly period
+  // Takes no input, returns an integer
   return Math.floor(this.number_of_customers() * this.avg_cookies_per_sale);
 };
 
-Fishcookie_store.prototype.calculate_cookie_sales = function() {
-  // pushes array elements to the list_of_sales array of the format
-  // #[am/pm]: #sold cookies
-  // Then a final element of
-  // Total: total cookies
+Fishcookie_store.prototype.calculate_cookie_sales = function () {
+  // pushes an hour's worth of cookie sales onto the this.list_of_sales array
+  // then pushes the day's total as the final element.
   // Generated from open to close, but one fewer because: we don't sell anything
   // on the hour we close, so omit that from the list.
 
@@ -73,9 +65,8 @@ Fishcookie_store.prototype.calculate_cookie_sales = function() {
   this.list_of_sales.push(total);
 };
 
-// render function, produces a table row and appends it to the data table
-Fishcookie_store.prototype.render = function() {
-
+Fishcookie_store.prototype.render_current_sales = function () {
+  // render function, produces a table row and appends it to the data table
   var target = document.getElementById('sales_section');
   var tr_el = document.createElement('tr');
   var td_el = document.createElement('td');
@@ -92,9 +83,14 @@ Fishcookie_store.prototype.render = function() {
   target.appendChild(tr_el);
 };
 
-// render table head by iterating through from open to close, then add a totals
-// column to the end.
-var render_table_head = function(open_time, close_time) {
+Fishcookie_store.prototype.render_new_sales = function () {
+  this.calculate_cookie_sales();
+  this.render_current_sales();
+};
+
+var render_table_head = function (open_time = 6, close_time = 20) {
+  // render table head by iterating through from open to close, then add a totals
+  // column to the end.
   var target = document.getElementById('sales_section');
   var tr_el = document.createElement('tr');
   var td_el = document.createElement('td');
@@ -102,9 +98,20 @@ var render_table_head = function(open_time, close_time) {
   // append an empty table cell at the beginning
   tr_el.appendChild(td_el);
 
-  for (var ii = open_time; ii < close_time; ii++) {
+  for (var ii = open_time; ii < 12; ii++) {
     td_el = document.createElement('td');
-    td_el.textContent = `${ii}:00`;
+    td_el.textContent = `${ii}:00 am`;
+    tr_el.appendChild(td_el);
+  }
+  if (ii === 12) {
+    td_el = document.createElement('td');
+    td_el.textContent = `${ii}:00 pm`;
+    tr_el.appendChild(td_el);
+    ii++;
+  }
+  for (ii; ii < close_time; ii++) {
+    td_el = document.createElement('td');
+    td_el.textContent = `${ii - 12}:00 pm`;
     tr_el.appendChild(td_el);
   }
 
@@ -115,10 +122,10 @@ var render_table_head = function(open_time, close_time) {
   target.appendChild(tr_el);
 };
 
-// render table footer by using the list of objects to, for each index of
-// list_of_sales, add them together to a column total, but also have a running
-// grand total to print at the end of the row
-var render_table_footer = function(open_time, close_time) {
+var render_table_footer = function (open_time = 6, close_time = 20) {
+  // render table footer by using the list of objects, for each index of
+  // list_of_sales, add them together to a column total, but also have a running
+  // grand total to print at the end of the row
   var target = document.getElementById('sales_section');
   var tr_el = document.createElement('tr');
   var td_el = document.createElement('td');
@@ -131,11 +138,13 @@ var render_table_footer = function(open_time, close_time) {
   // Store.list_of_sales.length - 1 corresponds to the last element index in the
   // array
   for (var ii = 0; ii < (close_time - open_time); ii++) {
-    hourly_total = First_and_pike.list_of_sales[ii];
-    hourly_total += Seatac_airport.list_of_sales[ii];
-    hourly_total += Seattle_center.list_of_sales[ii];
-    hourly_total += Capitol_hill.list_of_sales[ii];
-    hourly_total += Alki.list_of_sales[ii];
+    // each new time slot needs a new hourly total, start at 0
+    hourly_total = 0;
+
+    for (var ij = 0; ij < list_of_stores.length; ij++) {
+      hourly_total += list_of_stores[ij].list_of_sales[ii];
+    }
+
     grand_total += hourly_total;
 
     td_el = document.createElement('td');
@@ -147,25 +156,90 @@ var render_table_footer = function(open_time, close_time) {
   td_el.textContent = grand_total;
   tr_el.appendChild(td_el);
 
+  // set an id on the footer row so we can find and change it later
+  tr_el.setAttribute('id', 'sales_footer');
+
   target.appendChild(tr_el);
 };
 
+var populate_time_list = function () {
+  var targets = document.getElementsByClassName('time_list');
+  var option_el;
+
+  for (var ii = 0; ii < targets.length; ii++) {
+    // Hour zero should say 12:00 am
+    var jj = 0;
+    option_el = document.createElement('option');
+    option_el.setAttribute('value', jj);
+    option_el.textContent = '12:00 am';
+    targets[ii].appendChild(option_el);
+
+    for (jj = 1; jj < 12; jj++) {
+      option_el = document.createElement('option');
+      option_el.setAttribute('value', jj);
+      // Always set the initial selection of open_at (first in the time_list)
+      // to 6:00 am
+      if (jj === 6 && ii === 0) option_el.setAttribute('selected', '');
+      option_el.textContent = `${jj}:00 am`;
+      targets[ii].appendChild(option_el);
+    }
+    // Noon is also a special case...
+
+    option_el = document.createElement('option');
+    option_el.setAttribute('value', jj);
+    option_el.textContent = '12:00 pm';
+    targets[ii].appendChild(option_el);
+
+    for (jj++; jj < 24; jj++) {
+      option_el = document.createElement('option');
+      option_el.setAttribute('value', jj);
+      // Always set initial selection of close_at (second item using time_list)
+      // to 8:00 pm
+      if (jj === 20 && ii === 1) option_el.setAttribute('selected', '');
+      option_el.textContent = `${jj - 12}:00 pm`;
+      targets[ii].appendChild(option_el);
+    }
+  }
+
+};
+
+var append_store = function(event) {
+  event.preventDefault();
+
+  new Fishcookie_store(event.target.store_location.value,
+    event.target.min_hourly_cust.value,
+    event.target.max_hourly_cust.value,
+    event.target.avg_cookies_per_sale.value);
+
+  // Now calculate new data for the new store
+  list_of_stores[list_of_stores.length - 1].render_new_sales();
+
+  // Now remove the last table row
+  var table = document.getElementById('sales_section');
+  table.removeChild(document.getElementById('sales_footer'));
+
+  // Now render the table footer again
+  render_table_footer();
+};
+
+new Fishcookie_store('1st and Pike', 23, 65, 6.3);
+new Fishcookie_store('SeaTac Airport', 3, 24, 1.2);
+new Fishcookie_store('Seattle Center', 11, 38, 3.7);
+new Fishcookie_store('Capitol Hill', 20, 38, 2.3);
+new Fishcookie_store('Alki', 2, 16, 4.6);
+
+
+// populate the time list items
+populate_time_list();
+
 // time in 24-hour format, integers only!
-render_table_head(6, 20);
+render_table_head();
 
-First_and_pike.calculate_cookie_sales();
-First_and_pike.render();
+for (var i = 0; i < list_of_stores.length; i++) {
+  list_of_stores[i].render_new_sales();
+}
 
-Seatac_airport.calculate_cookie_sales();
-Seatac_airport.render();
+render_table_footer();
 
-Seattle_center.calculate_cookie_sales();
-Seattle_center.render();
-
-Capitol_hill.calculate_cookie_sales();
-Capitol_hill.render();
-
-Alki.calculate_cookie_sales();
-Alki.render();
-
-render_table_footer(6, 20);
+var form_target = document.getElementById('add_store_form');
+form_target.addEventListener('submit', append_store);
