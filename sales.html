@@ -33,10 +33,21 @@
     </ul>
   </div>
 
-  <div>
-    <table id="sales_section">
-    </table>
-  </div>
+  <form id="add_store_form">
+    <fieldset>
+      <legend>Add a new store location</legend>
+      <label>Location name: <input type="text" name="store_location" required></label>
+      <label>Minimum customers/hour: <input type="text" name="min_cust" required></label>
+      <label>Maximum customers/hour: <input type="text" name="max_cust" required></label>
+      <label>Average cookies per sale: <input type="text" name="avg_cookies_per_sale" required></label>
+      <label>Store opens at: <select name="open_at"></select></label>
+      <label>Store closes at: <select name="close_at"></select></label>
+      <input type="submit" value="Add New Store">
+    </fieldset>
+  </form>
+
+  <table id="sales_section">
+  </table>
 
   <script src="./js/app.js"></script>
 </body>
