@@ -37,9 +37,9 @@
     <fieldset>
       <legend>Add a new store location</legend>
       <label>Location name: <input type="text" name="store_location" required></label>
-      <label>Minimum customers/hour: <input type="number" name="min_hourly_cust" required></label>
-      <label>Maximum customers/hour: <input type="number" name="max_hourly_cust" required></label>
-      <label>Average cookies per sale: <input type="number" name="avg_cookies_per_sale" required step=".01"></label>
+      <label>Minimum customers/hour: <input type="number" name="min_hourly_cust" required min="0"></label>
+      <label>Maximum customers/hour: <input type="number" name="max_hourly_cust" required min="0"></label>
+      <label>Average cookies per sale: <input type="number" name="avg_cookies_per_sale" required step=".01" min="0"></label>
       <label>Store opens at: <select name="open_at" id="open_at" class="time_list"></select></label>
       <label>Store closes at: <select name="close_at" id="close_at" class="time_list"></select></label>
       <label><input type="submit" value="Add New Store"></label>

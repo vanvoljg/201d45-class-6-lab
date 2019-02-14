@@ -88,7 +88,7 @@ Fishcookie_store.prototype.render_new_sales = function () {
   this.render_current_sales();
 };
 
-var render_table_head = function (open_time, close_time) {
+var render_table_head = function (open_time = 6, close_time = 20) {
   // render table head by iterating through from open to close, then add a totals
   // column to the end.
   var target = document.getElementById('sales_section');
@@ -122,7 +122,7 @@ var render_table_head = function (open_time, close_time) {
   target.appendChild(tr_el);
 };
 
-var render_table_footer = function (open_time, close_time) {
+var render_table_footer = function (open_time = 6, close_time = 20) {
   // render table footer by using the list of objects, for each index of
   // list_of_sales, add them together to a column total, but also have a running
   // grand total to print at the end of the row
@@ -219,7 +219,7 @@ var append_store = function(event) {
   table.removeChild(document.getElementById('sales_footer'));
 
   // Now render the table footer again
-  render_table_footer(6, 20);
+  render_table_footer();
 };
 
 new Fishcookie_store('1st and Pike', 23, 65, 6.3);
@@ -233,13 +233,13 @@ new Fishcookie_store('Alki', 2, 16, 4.6);
 populate_time_list();
 
 // time in 24-hour format, integers only!
-render_table_head(6, 20);
+render_table_head();
 
 for (var i = 0; i < list_of_stores.length; i++) {
   list_of_stores[i].render_new_sales();
 }
 
-render_table_footer(6, 20);
+render_table_footer();
 
 var form_target = document.getElementById('add_store_form');
 form_target.addEventListener('submit', append_store);
