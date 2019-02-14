@@ -159,11 +159,59 @@ var render_table_footer = function (open_time, close_time) {
   target.appendChild(tr_el);
 };
 
+var populate_time_list = function () {
+  var targets = document.getElementsByClassName('time_list');
+  var option_el;
+
+  for (var ii = 0; ii < targets.length; ii++) {
+    // Hour zero should say 12:00 am
+    var jj = 0;
+    option_el = document.createElement('option');
+    option_el.setAttribute('value', jj);
+    option_el.textContent = '12:00 am';
+    targets[ii].appendChild(option_el);
+
+    for (jj = 1; jj < 12; jj++) {
+      option_el = document.createElement('option');
+      option_el.setAttribute('value', jj);
+      // Always set the initial selection of open_at (first in the time_list)
+      // to 6:00 am
+      if (jj === 6 && ii === 0) option_el.setAttribute('selected', '');
+      option_el.textContent = `${jj}:00 am`;
+      targets[ii].appendChild(option_el);
+    }
+    // Noon is also a special case...
+
+    option_el = document.createElement('option');
+    option_el.setAttribute('value', jj);
+    option_el.textContent = '12:00 pm';
+    targets[ii].appendChild(option_el);
+
+    for (jj++; jj < 24; jj++) {
+      option_el = document.createElement('option');
+      option_el.setAttribute('value', jj);
+      // Always set initial selection of close_at (second item using time_list)
+      // to 8:00 pm
+      if (jj === 20 && ii === 1) option_el.setAttribute('selected', '');
+      option_el.textContent = `${jj - 12}:00 pm`;
+      targets[ii].appendChild(option_el);
+    }
+  }
+
+};
+
+// var append_store = function(event) {
+
+// };
+
 new Fishcookie_store('1st and Pike', 23, 65, 6.3);
 new Fishcookie_store('SeaTac Airport', 3, 24, 1.2);
 new Fishcookie_store('Seattle Center', 11, 38, 3.7);
 new Fishcookie_store('Capitol Hill', 20, 38, 2.3);
 new Fishcookie_store('Alki', 2, 16, 4.6);
+
+// populate the time list items
+populate_time_list();
 
 // time in 24-hour format, integers only!
 render_table_head(6, 20);

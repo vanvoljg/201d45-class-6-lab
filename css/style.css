@@ -37,6 +37,7 @@ table {
 fieldset {
   border: 1px #a34633 solid;
   padding: 1em;
+  text-align: right;
 }
 
 fieldset, form label {
@@ -49,6 +50,7 @@ fieldset, form label {
 
 #add_store_form label {
   text-align: right;
+  padding: 1px;
 }
 
 #sales_section {
