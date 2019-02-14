@@ -210,6 +210,16 @@ var append_store = function(event) {
     event.target.min_hourly_cust.value,
     event.target.max_hourly_cust.value,
     event.target.avg_cookies_per_sale.value);
+
+  // Now calculate new data for the new store
+  list_of_stores[list_of_stores.length - 1].render_new_sales();
+
+  // Now remove the last table row
+  var table = document.getElementById('sales_section');
+  table.removeChild(document.getElementById('sales_footer'));
+
+  // Now render the table footer again
+  render_table_footer(6, 20);
 };
 
 new Fishcookie_store('1st and Pike', 23, 65, 6.3);
