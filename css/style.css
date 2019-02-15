@@ -8,7 +8,18 @@ Text to go on the darker reds: a34633 / rgb 163,70,51
 Font face: Nunito, from Google
 */
 
+* {
+  box-sizing: border-box;
+}
 
+body {
+  background: #ffa28c;
+}
+
+header {
+  height: 100px;
+
+}
 
 /*
 
