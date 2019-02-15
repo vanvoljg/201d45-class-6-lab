@@ -9,12 +9,6 @@ var _rand = function (a, b) {
   return (Math.random() * (max - min) + min);
 };
 
-var _randInt = function (a, b) {
-  var min = Math.min(a, b);
-  var max = Math.max(a, b);
-  return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
 // =====================================
 
 var Fishcookie_store = function (store_location, min_hourly_cust, max_hourly_cust, avg_cookies_per_sale,
