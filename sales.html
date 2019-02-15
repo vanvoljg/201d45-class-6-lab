@@ -11,43 +11,44 @@
 </head>
 <body>
   <header>
-    <nav>
-      <ul>
-        <li><a href="./index.html">Home</a></li>
-        <li class="current">Sales</li>
-      </ul>
-    </nav>
-    <img src="./assets/salmon.png" alt="Coho Salmon" />
-    <span>Pat's Delicious Salmon Cookies</span>
-    <h2>Sales Page</h2>
+    <div>
+      <img src="./assets/chinook.jpg" alt="Chinook Salmon">
+      <nav>
+        <ul>
+          <li class="current"><a href="./index.html">Home</a></li>
+          <li><a href="#">Products</a></li>
+          <li><a href="./locations.html">Locations</a></li>
+          <li><a href="#">History</a></li>
+          <li><a href="./sales.html">Sales Login</a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
+  
+  <main>
+    <article>
+      <form id="add_store_form">
+        <fieldset>
+          <legend>Add a new store location</legend>
+          <label>Location name: <input type="text" name="store_location" required></label>
+          <label>Minimum customers/hour: <input type="number" name="min_hourly_cust" required min="0"></label>
+          <label>Maximum customers/hour: <input type="number" name="max_hourly_cust" required min="0"></label>
+          <label>Average cookies per sale: <input type="number" name="avg_cookies_per_sale" required step=".01" min="0"></label>
+          <label>Store opens at: <select name="open_at" id="open_at" class="time_list"></select></label>
+          <label>Store closes at: <select name="close_at" id="close_at" class="time_list"></select></label>
+          <label><input type="submit" value="Add New Store"></label>
+        </fieldset>
+      </form>
 
-  <div id="location_list">
-    <h3>List of Locations</h3>
-    <ul>
-      <li>1st and Pike</li>
-      <li>Seatac Airport</li>
-      <li>Seattle Center</li>
-      <li>Capitol Hill</li>
-      <li>Alki</li>
-    </ul>
-  </div>
+      <h2>Sales Data</h2>
 
-  <form id="add_store_form">
-    <fieldset>
-      <legend>Add a new store location</legend>
-      <label>Location name: <input type="text" name="store_location" required></label>
-      <label>Minimum customers/hour: <input type="number" name="min_hourly_cust" required min="0"></label>
-      <label>Maximum customers/hour: <input type="number" name="max_hourly_cust" required min="0"></label>
-      <label>Average cookies per sale: <input type="number" name="avg_cookies_per_sale" required step=".01" min="0"></label>
-      <label>Store opens at: <select name="open_at" id="open_at" class="time_list"></select></label>
-      <label>Store closes at: <select name="close_at" id="close_at" class="time_list"></select></label>
-      <label><input type="submit" value="Add New Store"></label>
-    </fieldset>
-  </form>
+      <table id="sales_section">
+      </table>
 
-  <table id="sales_section">
-  </table>
+    </article>
+  </main>
+
+  <footer></footer>
 
   <script src="./js/app.js"></script>
 </body>
