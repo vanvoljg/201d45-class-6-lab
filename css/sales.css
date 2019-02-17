@@ -4,7 +4,6 @@ main {
 fieldset {
   border: 1px #a34633 solid;
   padding: 1em;
-  text-align: right;
 }
 
 fieldset, form label {
@@ -17,13 +16,23 @@ fieldset, form label {
   display: inline-block;
 }
 
-#add_store_form label {
+.store_form label {
+  height: 25px;
+}
+
+#add_store_form {
   text-align: right;
+}
+
+#add_store_form label {
   padding: 1px;
 }
 
-#display_store label {
+#display_form {
   text-align: left;
+}
+
+#display_form label {
   padding: 1px;
 }
 
