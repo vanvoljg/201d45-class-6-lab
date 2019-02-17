@@ -1,0 +1,66 @@
+main {
+  width: 1200px;
+}
+fieldset {
+  border: 1px #a34633 solid;
+  padding: 1em;
+  text-align: right;
+}
+
+fieldset, form label {
+  display: block;
+}
+
+.store_form {
+  vertical-align: top;
+  width: calc(50% - 20px);
+  display: inline-block;
+}
+
+#add_store_form label {
+  text-align: right;
+  padding: 1px;
+}
+
+#display_store label {
+  text-align: left;
+  padding: 1px;
+}
+
+div#sales {
+  font-size: inherit;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+    'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-weight: normal;
+  width: 100%;
+}
+#sales_section {
+  max-height: unset;
+}
+#sales_section {
+  overflow: auto;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+    'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  background: #f4866c;
+}
+#sales_section td {
+  padding: 7px;
+}
+#sales_section > tr:nth-of-type(even) {
+  background: #e27961;
+}
+
+#sales_section > tr > td:not(:first-child) {
+  width: 60px;
+}
+
+#sales_section > tr > td:first-child {
+  width: 200px;
+  font-weight: bold;
+}
+#sales_section > tr > td:last-child {
+  width: 50px;
+}
+#sales_section > *:first-child {
+  font-weight: bold;
+}
