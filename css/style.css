@@ -19,14 +19,21 @@ body {
 }
 
 header {
+  display: block;
   height: 110px;
   background: #602416;
   color: #ffa28c;
+  width: 100%;
+}
+
+header div {
+  height: 100%;
 }
 
 header a {
   color: #ffa28c;
   text-decoration: none;
+  display: block;
 }
 
 header img {
@@ -37,15 +44,28 @@ header img {
 header nav {
   display: inline-block;
   vertical-align: top;
-  margin: 5px auto 5px;
+  margin: auto;
+  width: auto;
+  min-width: 900px;
 }
 
 header ul {
-  height: 100px;
+  display: block;
+  height: 50px;
+  width: 100%;
+  margin: 25px auto;
+  overflow: auto;
 }
 
 header li {
-  display: inline-block;
+  float: left;
+  margin-right: 30px;
+  line-height: 50px;
+}
+
+header li:last-child {
+  background: blue;
+  float: right;
 }
 
 /*
