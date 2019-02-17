@@ -4,9 +4,36 @@ console.clear();
 // helper functions
 
 var _rand = function (a, b) {
+  // takes in any two numbers in any order, returns a random float between them
   var min = Math.min(a, b);
   var max = Math.max(a, b);
   return (Math.random() * (max - min) + min);
+};
+
+var _12hr_list = function (a, b) {
+  // takes in two numbers between 1 and 24, returns an array of strings in the range
+  // formatted : ##:00 am for numbers 1-11, 12:00 pm for 12, ##:00 pm for 13-23,
+  // and 12:00 am for 24
+  var min = Math.floor( Math.min(a, b) );
+  var max = Math.floor( Math.max(a, b) );
+  var rtn = [];
+  for (var i = min; i < max + 1; i++) { // up to max+1 for inclusive array
+    if (i < 1) i = 1; // if started earlier than 1am, set to 1am;
+    if (i < 12) {
+      rtn.push(`${i}:00 am`);
+      continue;
+    } else if (i === 12) {
+      rtn.push('12:00 pm');
+      continue;
+    } else if (i < 24) {
+      rtn.push(`${i - 12}:00 pm`);
+      continue;
+    } else {
+      rtn.push('12:00 am');
+      break; // Do not continue past 24 for any reason
+    }
+  }
+  return rtn;
 };
 
 // =====================================
