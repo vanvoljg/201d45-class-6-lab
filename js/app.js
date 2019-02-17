@@ -166,7 +166,8 @@ var render_table_footer = function (open_time = 6, close_time = 20) {
     tr_el.appendChild(td_el);
   }
 
-  // the last table cell needs to be the grand total
+  // the last table cell needs to be the grand total, a sum of the daily totals
+  // for each displayed store
   for (var jj = 0; jj < displayed_stores.length; jj++) {
     grand_total += displayed_stores[jj].daily_total;
   }
@@ -213,31 +214,59 @@ var populate_display_lists = function () {
 
 var append_store = function(event) {
   event.preventDefault();
+  var form = document.getElementById('add_store_form');
+  var loc = event.target.store_location.value;
+  var min = parseInt(event.target.min_hourly_cust.value);
+  var max = parseInt(event.target.max_hourly_cust.value);
+  var rate = parseFloat(event.target.avg_cookies_per_sale.value);
 
-  new Fishcookie_store(event.target.store_location.value,
-    event.target.min_hourly_cust.value,
-    event.target.max_hourly_cust.value,
-    event.target.avg_cookies_per_sale.value);
+  // check if the location already exists
+  for (var i = 0; i < list_of_stores.length; i++) {
+    if (loc.toLower() === list_of_stores[i].store_location.toLower()) {
+      alert('Location already exists');
+      form.reset();
+    }
+  }
 
-  // Now calculate new data for the new store
-  // list_of_stores[list_of_stores.length - 1].render_new_sales();
+  // if min is greater than max, switch them
+  // the way this works: min is set to the first index of an array, which is 
+  // created before min gets assigned a new value.
+  // the array is the value of max, which is actually the min, and so the array
+  // becomes [min, true], and as part of creating the array, max is assigned
+  // the value of min, which is actually the max when the array is created.
+  // goes like this: min = 6, max = 2 --> min = [2, (max=6)][0] = 2, and as part
+  // of creating that array, max now === 6.
+  if (min > max) {
+    min = [max, max = min][0];
+  }
 
-  // Now remove the last table row
-  // var table = document.getElementById('sales_section');
-  // table.removeChild(document.getElementById('sales_footer'));
+  new Fishcookie_store(loc, min, max, rate);
 
-  // Now render the table footer again
-  // render_table_footer();
+  // repopulate the display lists with new list of stores
+  populate_display_lists();
+
+  // reset the entry form
+  form.reset();
+
 };
 
-var render_displayed_stores = function (event = null) {
+var render_stores_table = function (event = null) {
   // this function is also a callback function for the displayed stores form
   // when 'change_stores' button is pressed (event.change_stores.)
+  // TODO: add event handling, change to a render_stores_table function which
+  // will read the min and max times for displayed_stores and use that to build
+  // a new table header, re-render the displayed_stores, and re-render the footer
+  // if no event, this must be the first render of the table, so load the first
+  // five stores from the list
   if (!event) {
-    for (var i = 0; i < list_of_stores.length; i++) {
+    render_table_head();
+
+    for (var i = 0; i < 5; i++) {
       list_of_stores[i].render_new_sales();
       displayed_stores.push(list_of_stores[i]);
     }
+
+    render_table_footer();
   }
 };
 
@@ -251,19 +280,18 @@ var init = function() {
 
   // populate the time list items
   populate_time_lists();
-  
+
   // populate the store display lists
   populate_display_lists();
 
-  // time in 24-hour format, integers only!
-  render_table_head();
-
-  render_displayed_stores();
-
-  render_table_footer();
+  render_stores_table();
 
   var form_target = document.getElementById('add_store_form');
   form_target.addEventListener('submit', append_store);
+
+  form_target = document.getElementById('display_form');
+  form_target.addEventListener('submit', render_stores_table);
+
 };
 
 init();
