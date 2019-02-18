@@ -78,6 +78,7 @@ Fishcookie_store.prototype.calculate_cookie_sales = function () {
   // on the hour we close, so omit that from the list.
 
   this.list_of_sales = [];
+  this.daily_total = 0;
   var sold = 0;
 
   for (var ch = this.open_at; ch < this.close_at; ch++) {
