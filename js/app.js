@@ -183,22 +183,27 @@ var render_table_footer = function (open_time = 6, close_time = 20) {
   target.appendChild(tr_el);
 };
 
-var populate_time_lists = function () {
+var populate_time_lists = function (default_open, default_close) {
+
   var targets = document.getElementsByClassName('time_list');
   var option_el;
   var hourlist = _12hr_list();
   hourlist[0] = '12:00 am'; // Just in case we want a 24-hour store...
 
   for (var ii = 0; ii < targets.length; ii++) {
-    // Hour zero should say 12:00 am
 
     for (var jj = 0; jj < 25; jj++) {
       option_el = document.createElement('option');
       option_el.setAttribute('value', jj);
 
-      if (jj === 6 && targets[ii].id === 'open_at') {
+      // when the hour is at default_open or default_close and the id of the
+      // current time_list is 'open_at' or 'close_at', respectively,
+      // set that option to selected
+      // these are the store default hours
+      if (jj === default_open && targets[ii].id === 'open_at') {
         option_el.setAttribute('selected', '');
-      } else if (jj === 20 && targets[ii].id === 'close_at') {
+      }
+      else if (jj === default_close && targets[ii].id === 'close_at') {
         option_el.setAttribute('selected', '');
       }
 
@@ -213,18 +218,32 @@ var populate_display_lists = function () {
 };
 
 var append_store = function(event) {
+  // this function handles click events inside the add_store_form element
+  // if clicks do not happen on the add_store_submit button, exit the callback
+  if (event.target.id !== 'add_store_submit') return;
+
+  // prevent default submit behavior -- don't refresh the page!
   event.preventDefault();
-  var form = document.getElementById('add_store_form');
-  var loc = event.target.store_location.value;
-  var min = parseInt(event.target.min_hourly_cust.value);
-  var max = parseInt(event.target.max_hourly_cust.value);
-  var rate = parseFloat(event.target.avg_cookies_per_sale.value);
+
+  // event.currentTarget is the DOM object node of the element that has the
+  // currently-fired event handler attached to it.
+  // If the form is not valid, checking will make the browser do an HTML5 validation
+  // and will exit the callback
+  var form = event.currentTarget;
+  if (!form.reportValidity()) return;
+
+  // form data is validated at this point, so turn numbers into numbers.
+  var loc = event.target.form.store_location.value;
+  var min = parseInt(event.target.form.min_hourly_cust.value);
+  var max = parseInt(event.target.form.max_hourly_cust.value);
+  var rate = parseFloat(event.target.form.avg_cookies_per_sale.value);
 
   // check if the location already exists
   for (var i = 0; i < list_of_stores.length; i++) {
-    if (loc.toLower() === list_of_stores[i].store_location.toLower()) {
+    if (loc.toLowerCase() === list_of_stores[i].store_location.toLowerCase()) {
       alert('Location already exists');
       form.reset();
+      return;
     }
   }
 
@@ -240,6 +259,7 @@ var append_store = function(event) {
     min = [max, max = min][0];
   }
 
+  // all input data is validated. make a new store
   new Fishcookie_store(loc, min, max, rate);
 
   // repopulate the display lists with new list of stores
@@ -247,7 +267,6 @@ var append_store = function(event) {
 
   // reset the entry form
   form.reset();
-
 };
 
 var render_stores_table = function (event = null) {
@@ -268,6 +287,10 @@ var render_stores_table = function (event = null) {
 
     render_table_footer();
   }
+  else {
+    console.log(event);
+    event.preventDefault();
+  }
 };
 
 
@@ -278,20 +301,22 @@ var init = function() {
   new Fishcookie_store('Capitol Hill', 20, 38, 2.3);
   new Fishcookie_store('Alki', 2, 16, 4.6);
 
+  var default_open = 6;
+  var default_close = 20;
+
   // populate the time list items
-  populate_time_lists();
+  populate_time_lists(default_open, default_close);
 
   // populate the store display lists
   populate_display_lists();
 
   render_stores_table();
 
-  var form_target = document.getElementById('add_store_form');
-  form_target.addEventListener('submit', append_store);
+  var add_store_form = document.getElementById('add_store_form');
+  add_store_form.addEventListener('click', append_store);
 
-  form_target = document.getElementById('display_form');
-  form_target.addEventListener('submit', render_stores_table);
-
+  var display_form_click = document.getElementById('display_form');
+  display_form_click.addEventListener('click', render_stores_table);
 };
 
 init();
