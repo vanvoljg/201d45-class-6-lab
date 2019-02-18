@@ -60,11 +60,11 @@ div#sales {
 }
 
 #sales_section > tr > td:not(:first-child) {
-  width: 60px;
+  width: 62.5px;
 }
 
 #sales_section > tr > td:first-child {
-  width: 200px;
+  width: 175px;
   font-weight: bold;
 }
 #sales_section > tr > td:last-child {

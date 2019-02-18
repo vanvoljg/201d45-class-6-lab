@@ -53,6 +53,8 @@ var Fishcookie_store = function (store_location, min_hourly_cust, max_hourly_cus
   this.close_at = close_at;
   this.daily_total = 0;
   list_of_stores.push(this);
+  // as part of instantiation, calculate new sales to prevent having to do it later
+  this.calculate_cookie_sales();
 };
 
 // defining methods for objects
@@ -107,9 +109,74 @@ Fishcookie_store.prototype.render_current_sales = function () {
   target.appendChild(tr_el);
 };
 
-Fishcookie_store.prototype.render_new_sales = function (a = 6, b = 20) {
-  this.calculate_cookie_sales(a, b);
-  this.render_current_sales(a, b);
+// Fishcookie_store.prototype.render_new_sales = function (a = 6, b = 20) {
+//   this.calculate_cookie_sales(a, b);
+//   this.render_current_sales(a, b);
+// };
+
+var populate_time_lists = function (open_time = 6, close_time = 20) {
+
+  var targets = document.getElementsByClassName('time_list');
+  var option_el;
+  var hourlist = _12hr_list();
+  hourlist[0] = '12:00 am'; // Just in case we want a 24-hour store...
+
+  for (var ii = 0; ii < targets.length; ii++) {
+
+    for (var jj = 0; jj < 25; jj++) {
+      option_el = document.createElement('option');
+      option_el.setAttribute('value', jj);
+
+      // when the hour is at open_time or close_time and the id of the
+      // current time_list is 'open_at' or 'close_at', respectively,
+      // set that option to selected
+      // these are the store default hours
+      if (jj === open_time && targets[ii].id === 'open_at') {
+        option_el.setAttribute('selected', '');
+      }
+      else if (jj === close_time && targets[ii].id === 'close_at') {
+        option_el.setAttribute('selected', '');
+      }
+
+      option_el.textContent = hourlist[jj];
+      targets[ii].appendChild(option_el);
+    }
+  }
+};
+
+var populate_display_lists = function () {
+  // gets the list of current stores from the list_of_stores array, and
+  // creates options inside each select of class "store_select"
+  // the value of each option corresponds to the index of that store in the
+  // list_of_stores array
+  // Also populates the displayed_stores array, because the length of that array
+  // is defined by the number of selects
+  var selects = document.getElementsByClassName('store_select');
+  var option_el;
+
+  for (var i = 0; i < selects.length; i++) {
+
+    for (var j = 0; j < list_of_stores.length; j++) {
+      option_el = document.createElement('option');
+      option_el.setAttribute('value', j);
+
+      // when populating the display lists, we should not reset displayed data,
+      // but we will always reset the selections to the first five stores here
+      // so stores 1-5 are shown sequentially on the selects
+      // also when an option is set to selected, push that to the
+      // displayed_stores array; any time we repopulate the display lists, just
+      // rewrite the array, keep it consistent to what's displayed.
+      if (i === j) {
+        option_el.setAttribute('selected', '');
+        displayed_stores.push(list_of_stores[j]);
+      }
+
+      // set the display name of current select option to be store location string
+      option_el.textContent = list_of_stores[j].store_location;
+      selects[i].appendChild(option_el);
+    }
+
+  }
 };
 
 var render_table_head = function (open_time = 6, close_time = 20) {
@@ -183,65 +250,17 @@ var render_table_footer = function (open_time = 6, close_time = 20) {
   target.appendChild(tr_el);
 };
 
-var populate_time_lists = function (default_open, default_close) {
+var render_stores_table = function () {
+  render_table_head();
 
-  var targets = document.getElementsByClassName('time_list');
-  var option_el;
-  var hourlist = _12hr_list();
-  hourlist[0] = '12:00 am'; // Just in case we want a 24-hour store...
-
-  for (var ii = 0; ii < targets.length; ii++) {
-
-    for (var jj = 0; jj < 25; jj++) {
-      option_el = document.createElement('option');
-      option_el.setAttribute('value', jj);
-
-      // when the hour is at default_open or default_close and the id of the
-      // current time_list is 'open_at' or 'close_at', respectively,
-      // set that option to selected
-      // these are the store default hours
-      if (jj === default_open && targets[ii].id === 'open_at') {
-        option_el.setAttribute('selected', '');
-      }
-      else if (jj === default_close && targets[ii].id === 'close_at') {
-        option_el.setAttribute('selected', '');
-      }
-
-      option_el.textContent = hourlist[jj];
-      targets[ii].appendChild(option_el);
-    }
+  for (var i = 0; i < displayed_stores.length; i++) {
+    displayed_stores[i].render_current_sales();
   }
+
+  render_table_footer();
 };
 
-var populate_display_lists = function () {
-  // gets the list of current stores from the list_of_stores array, and
-  // creates options inside each select of class "store_select"
-  // the value of each option corresponds to the index of that store in the
-  // list_of_stores array
-  var selects = document.getElementsByClassName('store_select');
-  var option_el;
-
-  for (var i = 0; i < selects.length; i++) {
-
-    for (var j = 0; j < list_of_stores.length; j ++) {
-      option_el = document.createElement('option');
-      option_el.setAttribute('value', j);
-      
-      // when populating the display lists, we should not reset displayed data,
-      // but we will always reset the selections to the first five stores here
-      // so stores 1-5 are shown sequentially on the selects
-      if (i === j) {
-        option_el.setAttribute('selected', '');
-      }
-
-      // set the display name of current select option to be store location string
-      option_el.textContent = list_of_stores[j].store_location;
-      selects[i].appendChild(option_el);
-    }
-  }
-};
-
-var append_store = function(event) {
+var add_store_handler = function(event) {
   // this function handles click events inside the add_store_form element
   // if clicks do not happen on the add_store_submit button, exit the callback
   if (event.target.id !== 'add_store_submit') return;
@@ -257,10 +276,10 @@ var append_store = function(event) {
   if (!form.reportValidity()) return;
 
   // form data is validated at this point, so turn numbers into numbers.
-  var loc = event.target.form.store_location.value;
-  var min = parseInt(event.target.form.min_hourly_cust.value);
-  var max = parseInt(event.target.form.max_hourly_cust.value);
-  var rate = parseFloat(event.target.form.avg_cookies_per_sale.value);
+  var loc = form.store_location.value;
+  var min = parseInt(form.min_hourly_cust.value);
+  var max = parseInt(form.max_hourly_cust.value);
+  var rate = parseFloat(form.avg_cookies_per_sale.value);
 
   // check if the location already exists
   for (var i = 0; i < list_of_stores.length; i++) {
@@ -293,36 +312,57 @@ var append_store = function(event) {
   form.reset();
 };
 
-var render_stores_table = function (event = null) {
-  // this function is also a callback function for the displayed stores form
+var display_form_handler = function(event) {
+  // this function is a callback function for the displayed stores form
   // when 'change_stores' button is pressed (event.change_stores.)
   // TODO: add event handling, change to a render_stores_table function which
   // will read the min and max times for displayed_stores and use that to build
   // a new table header, re-render the displayed_stores, and re-render the footer
-  // if no event, this must be the first render of the table, so load the first
-  // five stores from the list
-  if (event) { // an event is being passed, so we handle it
-    console.log(event);
-    event.preventDefault();
+  event.preventDefault();
+  var table = document.getElementById('sales_section');
 
-    if (event.target.id === 'change_stores') {
-      /// change store
-    } else if (event.target.id === 'recalculate') {
-      // recalculate displayed stores
+  if (event.target.id === 'change_stores') {
+    displayed_stores = [];
+    var picked_store_index;
+    var selects = document.getElementsByClassName('store_select');
+    var form = event.currentTarget;
+debugger;
+    // form is now the DOM object that has the event listener attached, which
+    // should be display_form. accessing form elements by array notation using
+    // the string name of each select element, 'store1'..'store5'
+    for (var j = 0; j < selects.length; j++) {
+      picked_store_index = parseInt(form[`store${j + 1}`].value);
+      displayed_stores.push(list_of_stores[picked_store_index]);
+    }
+    // now delete sales_section table and re-create it
+    table.innerHTML = '';
+
+    render_stores_table();
+
+  } else if (event.target.id === 'recalculate_displayed') {
+    // recalculate displayed stores
+    // blank the table, recalculate sales, and redraw the table
+
+    for (var k = 0; k < displayed_stores.length; k++) {
+      displayed_stores[k].calculate_cookie_sales();
     }
 
-  } else { // else it's not an event, which is less common, so handled last
-    render_table_head();
+    table.innerHTML = '';
 
-    for (var i = 0; i < 5; i++) {
-      list_of_stores[i].render_new_sales();
-      displayed_stores.push(list_of_stores[i]);
+    render_stores_table();
+
+  } else if (event.target.id === 'recalculate_all') {
+    //recalculate all
+    for (var l = 0; l < list_of_stores.length; l++) {
+      list_of_stores[l].calculate_cookie_sales();
     }
 
-    render_table_footer();
-  }
+    table.innerHTML = '';
+
+    render_stores_table();
+  } else return; // not an event we care about, so quit
+
 };
-
 
 var init = function() {
   new Fishcookie_store('1st and Pike', 23, 65, 6.3);
@@ -343,10 +383,10 @@ var init = function() {
   render_stores_table();
 
   var add_store_form = document.getElementById('add_store_form');
-  add_store_form.addEventListener('click', append_store);
+  add_store_form.addEventListener('click', add_store_handler);
 
   var display_form_click = document.getElementById('display_form');
-  display_form_click.addEventListener('click', render_stores_table);
+  display_form_click.addEventListener('click', display_form_handler);
 };
 
 init();
