@@ -42,8 +42,8 @@ var _12hr_list = function (a = 1, b = 24) {
 var list_of_stores = [];
 var displayed_stores = [];
 
-var Fishcookie_store = function (store_location, min_hourly_cust, max_hourly_cust, avg_cookies_per_sale,
-  open_at = 6, close_at = 20, list_of_sales = []) {
+var Fishcookie_store = function (store_location, min_hourly_cust, max_hourly_cust,
+  avg_cookies_per_sale, open_at = 6, close_at = 20, list_of_sales = []) {
   this.store_location = store_location;
   this.min_hourly_cust = min_hourly_cust;
   this.max_hourly_cust = max_hourly_cust;
@@ -114,6 +114,8 @@ Fishcookie_store.prototype.render_current_sales = function () {
 //   this.render_current_sales(a, b);
 // };
 
+// defining global functions
+
 var populate_time_lists = function (open_time = 6, close_time = 20) {
 
   var targets = document.getElementsByClassName('time_list');
@@ -155,6 +157,8 @@ var populate_display_lists = function () {
   var option_el;
 
   for (var i = 0; i < selects.length; i++) {
+    // for each select, begin by clearing anything which may exist already
+    selects[i].innerHTML = '';
 
     for (var j = 0; j < list_of_stores.length; j++) {
       option_el = document.createElement('option');
@@ -326,43 +330,32 @@ var display_form_handler = function(event) {
     var picked_store_index;
     var selects = document.getElementsByClassName('store_select');
     var form = event.currentTarget;
-debugger;
-    // form is now the DOM object that has the event listener attached, which
-    // should be display_form. accessing form elements by array notation using
-    // the string name of each select element, 'store1'..'store5'
+    // form now points to the DOM object that has the event listener attached, which
+    // should be display_form. accessing form elements from element 1 to end
     for (var j = 0; j < selects.length; j++) {
-      picked_store_index = parseInt(form[`store${j + 1}`].value);
+      picked_store_index = parseInt(form[j+1].value);
       displayed_stores.push(list_of_stores[picked_store_index]);
     }
-    // now delete sales_section table and re-create it
-    table.innerHTML = '';
-
-    render_stores_table();
-
   } else if (event.target.id === 'recalculate_displayed') {
     // recalculate displayed stores
     // blank the table, recalculate sales, and redraw the table
-
     for (var k = 0; k < displayed_stores.length; k++) {
       displayed_stores[k].calculate_cookie_sales();
     }
-
-    table.innerHTML = '';
-
-    render_stores_table();
-
   } else if (event.target.id === 'recalculate_all') {
     //recalculate all
     for (var l = 0; l < list_of_stores.length; l++) {
       list_of_stores[l].calculate_cookie_sales();
     }
-
-    table.innerHTML = '';
-
-    render_stores_table();
   } else return; // not an event we care about, so quit
+  // now delete sales_section table and re-create it
+  table.innerHTML = '';
+
+  render_stores_table();
 
 };
+
+// init function
 
 var init = function() {
   new Fishcookie_store('1st and Pike', 23, 65, 6.3);
@@ -377,7 +370,7 @@ var init = function() {
   // populate the time list items
   populate_time_lists(default_open, default_close);
 
-  // populate the store display lists
+  // populate the store display lists and list of displayed_stores
   populate_display_lists();
 
   render_stores_table();
@@ -388,5 +381,7 @@ var init = function() {
   var display_form_click = document.getElementById('display_form');
   display_form_click.addEventListener('click', display_form_handler);
 };
+
+// run the app
 
 init();

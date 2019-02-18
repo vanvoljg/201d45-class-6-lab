@@ -73,3 +73,12 @@ div#sales {
 #sales_section > *:first-child {
   font-weight: bold;
 }
+.time_list {
+  display:none;
+}
+#add_store_form label:nth-last-child(3)::after {
+  content: ' 6:00 am'
+}
+#add_store_form label:nth-last-child(2)::after {
+  content: ' 8:00 pm'
+}

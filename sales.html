@@ -31,7 +31,7 @@
           <label>Location name: <input type="text" name="store_location" required></label>
           <label>Minimum customers/hour: <input type="number" name="min_hourly_cust" required min="0"></label>
           <label>Maximum customers/hour: <input type="number" name="max_hourly_cust" required min="0"></label>
-          <label>Average cookies per sale: <input type="number" name="avg_cookies_per_sale" required step=".01" min="0"></label>
+          <label>Average cookies per sale: <input type="number" name="avg_cookies_per_sale" required step=".01" min="0" max="100"></label>
           <label>Store opens at: <select name="open_at" id="open_at" class="time_list"></select></label>
           <label>Store closes at: <select name="close_at" id="close_at" class="time_list"></select></label>
           <label><button type="submit" value="Add New Store" id="add_store_submit">Add New Store</button></label>
@@ -45,8 +45,11 @@
           <label><select name="store3" id="store3" class="store_select"></select> Store 3</label>
           <label><select name="store4" id="store4" class="store_select"></select> Store 4</label>
           <label><select name="store5" id="store5" class="store_select"></select> Store 5</label>
-          <label><button type="submit" value="Change Displayed Stores" id="change_stores">Change Displayed Store</button></label>
-          <label><button type="submit" value="Recalculate Displayed Stores" id="recalculate_displayed">Recalculate Displayed Stores</button><button type="submit" value="Recalculate All Stores" id="recalculate_all">Recalculate All Stores</button></label>
+          <!-- <label><select name="store5" id="store6" class="store_select"></select> Store 6</label> -->
+          <!-- <label><select name="store5" id="store7" class="store_select"></select> Store 7</label> -->
+          <label><button type="submit" value="Change Displayed Stores" id="change_stores">Change Displayed Stores</button></label>
+          <label><button type="submit" value="Recalculate Displayed Stores" id="recalculate_displayed">Recalculate Displayed Stores</button></label>
+          <label><button type="submit" value="Recalculate All Stores" id="recalculate_all">Recalculate All Stores</button></label>
         </fieldset>
       </form>
 
