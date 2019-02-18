@@ -6,7 +6,7 @@ fieldset {
   padding: 1em;
 }
 
-fieldset, form label {
+form label {
   display: block;
 }
 

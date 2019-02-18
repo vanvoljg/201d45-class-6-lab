@@ -214,7 +214,31 @@ var populate_time_lists = function (default_open, default_close) {
 };
 
 var populate_display_lists = function () {
+  // gets the list of current stores from the list_of_stores array, and
+  // creates options inside each select of class "store_select"
+  // the value of each option corresponds to the index of that store in the
+  // list_of_stores array
+  var selects = document.getElementsByClassName('store_select');
+  var option_el;
 
+  for (var i = 0; i < selects.length; i++) {
+
+    for (var j = 0; j < list_of_stores.length; j ++) {
+      option_el = document.createElement('option');
+      option_el.setAttribute('value', j);
+      
+      // when populating the display lists, we should not reset displayed data,
+      // but we will always reset the selections to the first five stores here
+      // so stores 1-5 are shown sequentially on the selects
+      if (i === j) {
+        option_el.setAttribute('selected', '');
+      }
+
+      // set the display name of current select option to be store location string
+      option_el.textContent = list_of_stores[j].store_location;
+      selects[i].appendChild(option_el);
+    }
+  }
 };
 
 var append_store = function(event) {
@@ -277,7 +301,17 @@ var render_stores_table = function (event = null) {
   // a new table header, re-render the displayed_stores, and re-render the footer
   // if no event, this must be the first render of the table, so load the first
   // five stores from the list
-  if (!event) {
+  if (event) { // an event is being passed, so we handle it
+    console.log(event);
+    event.preventDefault();
+
+    if (event.target.id === 'change_stores') {
+      /// change store
+    } else if (event.target.id === 'recalculate') {
+      // recalculate displayed stores
+    }
+
+  } else { // else it's not an event, which is less common, so handled last
     render_table_head();
 
     for (var i = 0; i < 5; i++) {
@@ -286,10 +320,6 @@ var render_stores_table = function (event = null) {
     }
 
     render_table_footer();
-  }
-  else {
-    console.log(event);
-    event.preventDefault();
   }
 };
 
