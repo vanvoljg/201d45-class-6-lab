@@ -47,9 +47,9 @@ var Fishcookie_store = function (store_location, min_hourly_cust, max_hourly_cus
   this.min_hourly_cust = min_hourly_cust;
   this.max_hourly_cust = max_hourly_cust;
   this.avg_cookies_per_sale = avg_cookies_per_sale;
-  this.list_of_sales = list_of_sales;
-  this.open_at = open_at;
-  this.close_at = close_at;
+  this.list_of_sales = list_of_sales || [];
+  this.open_at = open_at || 6;
+  this.close_at = close_at || 20;
   this.daily_total = 0;
   list_of_stores.push(this);
   // as part of instantiation, calculate new sales to prevent having to do it later
@@ -107,36 +107,6 @@ Fishcookie_store.prototype.render_current_sales = function () {
   tr_el.appendChild(td_el);
 
   target.appendChild(tr_el);
-};
-
-var populate_time_lists = function (open_time = 6, close_time = 20) {
-
-  var targets = document.getElementsByClassName('time_list');
-  var option_el;
-  var hourlist = _12hr_list();
-  hourlist[0] = '12:00 am'; // Just in case we want a 24-hour store...
-
-  for (var ii = 0; ii < targets.length; ii++) {
-
-    for (var jj = 0; jj < 25; jj++) {
-      option_el = document.createElement('option');
-      option_el.setAttribute('value', jj);
-
-      // when the hour is at open_time or close_time and the id of the
-      // current time_list is 'open_at' or 'close_at', respectively,
-      // set that option to selected
-      // these are the store default hours
-      if (jj === open_time && targets[ii].id === 'open_at') {
-        option_el.setAttribute('selected', '');
-      }
-      else if (jj === close_time && targets[ii].id === 'close_at') {
-        option_el.setAttribute('selected', '');
-      }
-
-      option_el.textContent = hourlist[jj];
-      targets[ii].appendChild(option_el);
-    }
-  }
 };
 
 var render_table_head = function (open_time = 6, close_time = 20) {
@@ -205,9 +175,6 @@ var render_table_footer = function (open_time = 6, close_time = 20) {
   td_el.textContent = grand_total;
   tr_el.appendChild(td_el);
 
-  // set an id on the footer row so we can find and change it later
-  tr_el.setAttribute('id', 'sales_footer');
-
   target.appendChild(tr_el);
 };
 
@@ -242,15 +209,6 @@ var add_store_handler = function(event) {
   var max = parseInt(form.max_hourly_cust.value);
   var rate = parseFloat(form.avg_cookies_per_sale.value);
 
-  // check if the location already exists
-  for (var i = 0; i < list_of_stores.length; i++) {
-    if (loc.toLowerCase() === list_of_stores[i].store_location.toLowerCase()) {
-      alert('Location already exists');
-      form.reset();
-      return;
-    }
-  }
-
   // if min is greater than max, switch them
   // the way this works: min is set to the first index of an array, which is 
   // created before min gets assigned a new value.
@@ -261,6 +219,25 @@ var add_store_handler = function(event) {
   // of creating that array, max now === 6.
   if (min > max) {
     min = [max, max = min][0];
+  }
+
+  // check if the location already exists. if it does, update the values and
+  // print an alert saying things got changed. then leave the function
+  for (var i = 0; i < list_of_stores.length; i++) {
+    if (loc.toLowerCase() === list_of_stores[i].store_location.toLowerCase()) {
+      list_of_stores[i].min_hourly_cust = min;
+      list_of_stores[i].max_hourly_cust = max;
+      list_of_stores[i].avg_cookies_per_sale = rate;
+      alert(`Location "${list_of_stores[i].store_location}" updated with new values:
+Minimum customers/hour: ${min}
+Maximum customers/hour: ${max}
+Average cookies per sale: ${rate}`);
+
+      list_of_stores[i].calculate_cookie_sales();
+      render_stores_table();
+      form.reset();
+      return;
+    }
   }
 
   // all input data is validated. make a new store
@@ -275,40 +252,15 @@ var add_store_handler = function(event) {
 };
 
 var display_form_handler = function(event) {
-  // this function is a callback function for the displayed stores form
-  // when 'change_stores' button is pressed (event.change_stores.)
-  // TODO: add event handling, change to a render_stores_table function which
-  // will read the min and max times for list_of_stores and use that to build
-  // a new table header, re-render the list_of_stores, and re-render the footer
-  event.preventDefault();
-  var table = document.getElementById('sales_section');
+  if (event.target.id !== 'recalculate_all') return;
 
-  if (event.target.id === 'change_stores') {
-    list_of_stores = [];
-    var picked_store_index;
-    var selects = document.getElementsByClassName('store_select');
-    var form = event.currentTarget;
-    // form now points to the DOM object that has the event listener attached, which
-    // should be display_form. accessing form elements from element 1 to end
-    for (var j = 0; j < selects.length; j++) {
-      picked_store_index = parseInt(form[j+1].value);
-      list_of_stores.push(list_of_stores[picked_store_index]);
-    }
-  } else if (event.target.id === 'recalculate_displayed') {
-    // recalculate displayed stores
-    // blank the table, recalculate sales, and redraw the table
-    for (var k = 0; k < list_of_stores.length; k++) {
-      list_of_stores[k].calculate_cookie_sales();
-    }
-  } else if (event.target.id === 'recalculate_all') {
-    //recalculate all
-    for (var l = 0; l < list_of_stores.length; l++) {
-      list_of_stores[l].calculate_cookie_sales();
-    }
-  } else return; // not an event we care about, so quit
+  event.preventDefault();
+
+  for (var l = 0; l < list_of_stores.length; l++) {
+    list_of_stores[l].calculate_cookie_sales();
+  }
 
   render_stores_table();
-
 };
 
 // init function
@@ -319,15 +271,6 @@ var init = function() {
   new Fishcookie_store('Seattle Center', 11, 38, 3.7);
   new Fishcookie_store('Capitol Hill', 20, 38, 2.3);
   new Fishcookie_store('Alki', 2, 16, 4.6);
-
-  var default_open = 6;
-  var default_close = 20;
-
-  // populate the time list items
-  populate_time_lists(default_open, default_close);
-
-  // populate the store display lists and list of list_of_stores
-  // populate_display_lists();
 
   render_stores_table();
 
