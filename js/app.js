@@ -40,7 +40,6 @@ var _12hr_list = function (a = 1, b = 24) {
 // =====================================
 
 var list_of_stores = [];
-var displayed_stores = [];
 
 var Fishcookie_store = function (store_location, min_hourly_cust, max_hourly_cust,
   avg_cookies_per_sale, open_at = 6, close_at = 20, list_of_sales = []) {
@@ -110,13 +109,6 @@ Fishcookie_store.prototype.render_current_sales = function () {
   target.appendChild(tr_el);
 };
 
-// Fishcookie_store.prototype.render_new_sales = function (a = 6, b = 20) {
-//   this.calculate_cookie_sales(a, b);
-//   this.render_current_sales(a, b);
-// };
-
-// defining global functions
-
 var populate_time_lists = function (open_time = 6, close_time = 20) {
 
   var targets = document.getElementsByClassName('time_list');
@@ -147,47 +139,11 @@ var populate_time_lists = function (open_time = 6, close_time = 20) {
   }
 };
 
-var populate_display_lists = function () {
-  // gets the list of current stores from the list_of_stores array, and
-  // creates options inside each select of class "store_select"
-  // the value of each option corresponds to the index of that store in the
-  // list_of_stores array
-  // Also populates the displayed_stores array, because the length of that array
-  // is defined by the number of selects
-  var selects = document.getElementsByClassName('store_select');
-  var option_el;
-
-  for (var i = 0; i < selects.length; i++) {
-    // for each select, begin by clearing anything which may exist already
-    selects[i].innerHTML = '';
-
-    for (var j = 0; j < list_of_stores.length; j++) {
-      option_el = document.createElement('option');
-      option_el.setAttribute('value', j);
-
-      // when populating the display lists, we should not reset displayed data,
-      // but we will always reset the selections to the first five stores here
-      // so stores 1-5 are shown sequentially on the selects
-      // also when an option is set to selected, push that to the
-      // displayed_stores array; any time we repopulate the display lists, just
-      // rewrite the array, keep it consistent to what's displayed.
-      if (i === j) {
-        option_el.setAttribute('selected', '');
-        displayed_stores.push(list_of_stores[j]);
-      }
-
-      // set the display name of current select option to be store location string
-      option_el.textContent = list_of_stores[j].store_location;
-      selects[i].appendChild(option_el);
-    }
-
-  }
-};
-
 var render_table_head = function (open_time = 6, close_time = 20) {
   // render table head by iterating through from open to close, then add a totals
   // column to the end.
   var target = document.getElementById('sales_section');
+  target.innerHTML = '';
   var tr_el = document.createElement('tr');
   var td_el = document.createElement('td');
 
@@ -226,10 +182,10 @@ var render_table_footer = function (open_time = 6, close_time = 20) {
     // each new time slot needs a new hourly total, start at 0
     hourly_total = 0;
 
-    for (var ij = 0; ij < displayed_stores.length; ij++) {
+    for (var ij = 0; ij < list_of_stores.length; ij++) {
       // hourly total adds the current hour (ii) from list_of sales belonging to the
       // current item (ij) of displayed stores array
-      hourly_total += displayed_stores[ij].list_of_sales[ii];
+      hourly_total += list_of_stores[ij].list_of_sales[ii];
     }
 
     // then appends the hourly total to the table as a td
@@ -240,8 +196,8 @@ var render_table_footer = function (open_time = 6, close_time = 20) {
 
   // the last table cell needs to be the grand total, a sum of the daily totals
   // for each displayed store
-  for (var jj = 0; jj < displayed_stores.length; jj++) {
-    grand_total += displayed_stores[jj].daily_total;
+  for (var jj = 0; jj < list_of_stores.length; jj++) {
+    grand_total += list_of_stores[jj].daily_total;
   }
 
   // and append that total to the end...
@@ -258,8 +214,8 @@ var render_table_footer = function (open_time = 6, close_time = 20) {
 var render_stores_table = function () {
   render_table_head();
 
-  for (var i = 0; i < displayed_stores.length; i++) {
-    displayed_stores[i].render_current_sales();
+  for (var i = 0; i < list_of_stores.length; i++) {
+    list_of_stores[i].render_current_sales();
   }
 
   render_table_footer();
@@ -311,7 +267,8 @@ var add_store_handler = function(event) {
   new Fishcookie_store(loc, min, max, rate);
 
   // repopulate the display lists with new list of stores
-  populate_display_lists();
+  // populate_display_lists();
+  render_stores_table();
 
   // reset the entry form
   form.reset();
@@ -321,13 +278,13 @@ var display_form_handler = function(event) {
   // this function is a callback function for the displayed stores form
   // when 'change_stores' button is pressed (event.change_stores.)
   // TODO: add event handling, change to a render_stores_table function which
-  // will read the min and max times for displayed_stores and use that to build
-  // a new table header, re-render the displayed_stores, and re-render the footer
+  // will read the min and max times for list_of_stores and use that to build
+  // a new table header, re-render the list_of_stores, and re-render the footer
   event.preventDefault();
   var table = document.getElementById('sales_section');
 
   if (event.target.id === 'change_stores') {
-    displayed_stores = [];
+    list_of_stores = [];
     var picked_store_index;
     var selects = document.getElementsByClassName('store_select');
     var form = event.currentTarget;
@@ -335,13 +292,13 @@ var display_form_handler = function(event) {
     // should be display_form. accessing form elements from element 1 to end
     for (var j = 0; j < selects.length; j++) {
       picked_store_index = parseInt(form[j+1].value);
-      displayed_stores.push(list_of_stores[picked_store_index]);
+      list_of_stores.push(list_of_stores[picked_store_index]);
     }
   } else if (event.target.id === 'recalculate_displayed') {
     // recalculate displayed stores
     // blank the table, recalculate sales, and redraw the table
-    for (var k = 0; k < displayed_stores.length; k++) {
-      displayed_stores[k].calculate_cookie_sales();
+    for (var k = 0; k < list_of_stores.length; k++) {
+      list_of_stores[k].calculate_cookie_sales();
     }
   } else if (event.target.id === 'recalculate_all') {
     //recalculate all
@@ -349,8 +306,6 @@ var display_form_handler = function(event) {
       list_of_stores[l].calculate_cookie_sales();
     }
   } else return; // not an event we care about, so quit
-  // now delete sales_section table and re-create it
-  table.innerHTML = '';
 
   render_stores_table();
 
@@ -371,8 +326,8 @@ var init = function() {
   // populate the time list items
   populate_time_lists(default_open, default_close);
 
-  // populate the store display lists and list of displayed_stores
-  populate_display_lists();
+  // populate the store display lists and list of list_of_stores
+  // populate_display_lists();
 
   render_stores_table();
 
